@@ -7,7 +7,7 @@ In this guide, we’ll take the first steps toward creating a Pi-based router by
 2. Configure a static address for your Pi
 3. Install and configure DHCP provide addresses to local clients
 
-> __Before you Begin__ - Complete initial setup of Raspbian and `systemd-networkd` and ensure that you can connect directly to the Pi via a point-to-point Ethernet link and that the Pi can connect to the Internet via wireless. 
+> __Before you Begin:__ Complete initial setup of Raspbian and `systemd-networkd` and ensure that you can connect directly to the Pi via a point-to-point Ethernet link and that the Pi can connect to the Internet via wireless. 
 
 ## Details
 
