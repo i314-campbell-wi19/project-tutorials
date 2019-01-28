@@ -26,8 +26,9 @@ Your file should look something like:
 # We only want to match the eth0 interface
 Name=eth0
 
+# Provide full address config in abbreviated notation
 [Network]
-Address=172.16.4.0/28
+Address=172.16.4.1/28
 
 # Enable link local addresses for IPv6 (FE80::)
 LinkLocalAddressing=ipv6
@@ -37,7 +38,7 @@ LinkLocalAddressing=ipv6
 
 We'd usually need to set up a static address on our local device, but this shouldn’t be necessary since SSH will typically use our auto-configured IPv6 addresses to talk to the Pi. 
 
-In order to test these new settings, reboot your Pi. Once you log back in, use the `ip addr` command to check that `eth0` is online with the new address.
+In order to test these new settings,call `sudo systemctl restart systemd-networkd.service` or reboot your Pi. Once you log back in, verify that `networkd` is running by calling `systemctl status systemd-networkd` and use the `ip addr` command to check that `eth0` is online with the new address.
 
 > __Note:__ Raspbian tutorials will often instruct you to configure static addresses in the `/etc/dhcpcd.conf` file. While this is a reasonable solution for some applications, it is not compatible with the ISC DHCP Server. This tutorial assumes that `dhcpcd` has already been disabled.
 
@@ -53,12 +54,12 @@ Edit `/etc/default/isc-dhcp-server` to specify the interfaces (`eth0` only) on w
 
 Using the resources provided or other tutorials, edit `/etc/dhcp/dhcpd.conf` and configure the DHCP server to distribute addresses within your predefined address range. 
 
-* Configure a contiguous `range` of IP addresses for the DHCP pool out of the address range you selected earlier.
-* Exclude your Pi's static IP address from the DHCP pool (we don't want to give it away)
-* You should not specify any additional options within the DHCP block at this point in time. 
-
-
 > Note: The stock configuration provides plenty of example subnet declarations. If you are using the this file, you should comment out the lines at the top of the file that specify global settings for nameservers and domain (we won’t use them right now).
+
+* You'll need to determine the network ID and subnet mask (in dotted decimal form) to add a network block into the dhcpd.conf file. 
+* Configure a contiguous `range` of IP addresses for the DHCP pool out of the address range you selected earlier.
+* Exclude your Pi's static IP address from the DHCP pool (we don't want to give it away).
+* You should not specify any additional options within the DHCP block at this point in time. 
 
 ### Test DHCP Server
 Use `systemctl` to restart the DHCP service as shown here:
@@ -85,12 +86,13 @@ Raspbian provides us with several commands to troubleshoot and find errors relat
 Search the system logs for relevant errors `journalctl -u isc-dhcp-server`
 
 As you debug, keep the following points in mind:
+
 * A misplaced space or bracket may cause DHCP to fail, so pay close attention to syntax.
 * Your Pi will keep it's static address, so be sure that you excluded the address from the DHCP pool.
 * Double check that you’ve configured the server defaults with the correct interface names and commented out IPv6 related settings.
 
 ### Resources
-[Debian Network Configuration Documentation](https://wiki.debian.org/NetworkConfiguration#Configuring_the_interface_manually)
+[Debian Network Configuration Documentation](https://wiki.debian.org/SystemdNetworkd) - Configuring network settings with `networkd`
 
-[Raspberry Pi DHCP Server Tutorial](http://www.noveldevices.co.uk/rp-dhcp-server)
+[Raspberry Pi DHCP Server Tutorial](http://www.noveldevices.co.uk/rp-dhcp-server) - Configuring `isc-dhcp-server` (ignore the details about `/etc/network/interfaces` since we're using `networkd`)
 
