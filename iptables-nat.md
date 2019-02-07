@@ -1,21 +1,11 @@
-# Project 3 resources 
+# Introduction to Iptables
 
+## Iptables
 
-## Resources
-* [Iptables and Netfilter Deep Dive](https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture)
-* [Linux Network Administrators Guide - Masquerading](http://www.oreilly.com/openbook/linag2/book/ch11.html)
-* [DigitalOcean Tutorial - Manipulate Iptables Rules](https://www.digitalocean.com/community/tutorials/how-to-list-and-delete-iptables-firewall-rules)
- 
-
---- 
-## Simple Routing Template
-You can find a NAT IP-tables template along with instructions on how to fill it out in this repo at `./iptables_nat_template.conf`.
-
----
-## Introduction to IP-tables
+Iptables is a tool that has been used for more than 20 years to allow administrators to manage *packet filter rules* that shape the behavior of the Linux kernel's network stack.
 
 ### Tables
-Iptables uses a basic structure called a table to group rules according to their main function. Common tables include `nat`, `filter`, `mangle`, and `raw`. For this exercise, we'll focus on the **`nat`** table to implement _address translation_ and the **`filter`** table to protect our network from outside traffic. 
+Iptables uses a basic structure called a table to group rules according to their main function. Common tables include `nat`, `filter`, `mangle`, and `raw`. For this exercise, we'll focus on the **`nat`** table to implement _address translation_ between private and public addresses along with the **`filter`** table to protect our network from outside traffic. 
 
 ### Chains
 Within each table, rules are assigned to a structure called a chain. The order of rules in each chain matters. Once a rule is matched, iptables will jump to a specified action (or another chain) without processing the other rules. 
@@ -53,7 +43,7 @@ iptables -A FORWARD -i <LAN> -o <WAN>
 ```
 
 ### Using Connection State in Rules
-Iptables is stateful, meaning that it is even possible to specify rules based on the relationship of one packet to others that have been received. This feature shapes our rules in two ways. 
+Iptables is _stateful_, meaning that it is even possible to specify rules based on the relationship of one packet to others that have been received. This feature shapes our rules in two ways. 
 
 First, you'll see that our masquerading rule also handles the de-masquerading process for incoming packets. 
 
@@ -76,3 +66,9 @@ iptables -P FORWARD DROP
 ```
 
 Be careful, however, that you don't lock yourself out by a bad combination of rules and policies. For example, setting `-P INPUT DROP` and `-P OUTPUT DROP` will block all inbound and outbound traffic to your Pi if you don't already have rules set up to explicitly allow SSH or other tools.
+
+## Resources
+ 
+* [Iptables and Netfilter Deep Dive](https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture)
+* [Linux Network Administrators Guide - Masquerading](http://www.oreilly.com/openbook/linag2/book/ch11.html)
+* [DigitalOcean Tutorial - Manipulate Iptables Rules](https://www.digitalocean.com/community/tutorials/how-to-list-and-delete-iptables-firewall-rules)
