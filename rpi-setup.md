@@ -70,7 +70,7 @@ If the system reports that you are on Windows 10 and that the `WindowsVerion` is
 Bonjour includes an implementation of _multicast DNS (mDNS). mDNS is a standard protocol that lets us locate devices and services (including our RaspberryPi's) on simple networks without any manual configuration or supporting infrastructure. Microsoft has only begun to embrace these standards, and this poses a problem since our initial network consists of nothing more than a point-to-point Ethernet connection.
 
 ###  2.3. <a name='LinuxUsers'></a>Linux Users
-Using your default package manager (likely `yum` or `apt`), confirm that __Avahai mDNS__ services are installed (mDNS is typically part of the default distribution).
+Using your default package manager (likely `yum` or `apt`), confirm that __Avahi mDNS__ services are installed (mDNS is typically part of the default distribution).
 
 https://www.raspberrypi.org/documentation/linux/usage/commands.md
 
