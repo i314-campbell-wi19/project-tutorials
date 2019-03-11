@@ -4,7 +4,7 @@
 `https://frrouting.org`
 
 ## Download appropriate package
-`wget https://github.com/FRRouting/frr/releases/download/frr-6.0.2/frr_6.0.2-0.deb9u1_armhf.deb
+`wget https://github.com/FRRouting/frr/releases/download/frr-6.0.2/frr_6.0.2-0.deb9u1_armhf.deb`
 
 ## Run installer 
 `sudo dpkg -i frr_4.0-1.debian9.1_armhf.deb` 
