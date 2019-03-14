@@ -70,3 +70,17 @@ neighbor vlan10 interface remote-as external
 network 172.23.0.0/24
 quit
 ```
+
+Supporting multiple routing links on a single router requires a simple modification to this script to add additional `neighbor` statements. If you've already configured other details, you don't need to repeat them to add an aditional neighbor. Enter the following commands to resume editing your existing router:
+
+```
+configure terminal
+router bgp 65000
+```
+
+### Save Your Changes
+Don't forget that live updates to FRR are not persistent. Rebooting the router or restarting `frr` will dispose of any settings that are not written to the startup config.
+
+To save your changes, you need to be in _enable_ mode. Exit out of _configure_ mode, if necessary, and call `copy running-config startup-config` or `write memory`.
+
+From the Linux commandline, you can view the current _startup configuration_ within `/etc/frr/frr.conf`.
