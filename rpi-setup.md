@@ -191,22 +191,28 @@ After you complete this step, I also recommend the following changes on every ne
 # Setting the timezone will ensure that log messages are displayed in local time, which is quite helpful for troubleshooting
 # You can see a list of timezones by running `timedatectl list-timezones`
 
-pi@raspberrypi:~ sudo timedatectl set-timezone America/Los_Angeles
+pi@raspberrypi:~$ sudo timedatectl set-timezone America/Los_Angeles
 
 # Configure the locale and keymap prevents common problems encountered when editing files and troubleshooting bricked devices ... Raspbian defaults to a British locale
 
 # The first command will open the specified file in the nano text editor. You need to locate and uncomment the line that defines the en_US.UTF-8 locale.
 
-pi@raspberrypi:~ sudo nano /etc/locale.gen
+pi@raspberrypi:~$ sudo nano /etc/locale.gen
 
 # After you edit this file, we need to re-generate locale information for the local system before we can update the current setting and updating the keyboard mapping.
 
-pi@raspberrypi:~ sudo locale-gen
-pi@raspberrypi:~ sudo localectl set-locale "LANG=en_US.UTF-8"
-pi@raspberrypi:~ sudo localectl set-keymap us
+pi@raspberrypi:~$ sudo locale-gen
+pi@raspberrypi:~$ sudo localectl set-locale "LANG=en_US.UTF-8"
+pi@raspberrypi:~$ sudo localectl set-keymap us
+
+# Update default editor selections for the pi user and for root
+pi@raspberrypi:~$ select-editor # follow prompts to make a selection
+
+# The previous selection only applies to the current user. We need to sudo to ensure that our defaul will be respected when performing actions that require root privileges.
+pi@raspberrypi:~$ sudo select-editor
 ```
 
-_Note: We started each of the previous commands with the term `sudo`. When used in this way, `sudo` runs the remainder of the statement as the `root` super user, i.e., super-user-do._
+_Note: We started many of the previous commands with the term `sudo`. When used in this way, `sudo` runs the remainder of the statement as the `root` super user, i.e., super-user-do._
 
 _By default, the `pi` user is restricted in which parts of the system it can read and modify (Linux is heavily user-based in it's permissions model); however, the user is permitted to elevate itself to the admin level when it is necessary to perform privileged commands._
 
