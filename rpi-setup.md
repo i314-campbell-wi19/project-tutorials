@@ -1,29 +1,29 @@
-# Raspberry Pi Setup Guide (2019-01-16)
+# Raspberry Pi Setup Guide (2019-04-16)
+##  1. <a name='Overview'></a>Overview
+
 <!-- vscode-markdown-toc -->
-1. [Overview](#Overview)
-2. [Before you start](#Beforeyoustart)
-    * 2.1. [Everyone](#Everyone)
+* 1. [Overview](#Overview)
+* 2. [Before you start](#Beforeyoustart)
+	* 2.1. [Everyone](#Everyone)
 	* 2.2. [Windows Users](#WindowsUsers)
 		* 2.2.1. [Text Editor](#TextEditor)
 		* 2.2.2. [Verify Support for mDNS](#VerifySupportformDNS)
 	* 2.3. [Linux Users](#LinuxUsers)
-3. [Install Raspbian](#InstallRaspbian)
+* 3. [Install Raspbian](#InstallRaspbian)
 	* 3.1. [Write Raspbian to MicroSD](#WriteRaspbiantoMicroSD)
 	* 3.2. [Update Configuration](#UpdateConfiguration)
 		* 3.2.1. [Enable SSH](#EnableSSH)
-4. [Initial Boot](#InitialBoot)
+* 4. [Initial Boot](#InitialBoot)
 	* 4.1. [Choose a New Password](#ChooseaNewPassword)
 	* 4.2. [Default Configuration](#DefaultConfiguration)
 	* 4.3. [Update Hostname](#UpdateHostname)
-5. [Enable Passwordless Login](#EnablePasswordlessLogin)
-6. [Connect to Wifi](#ConnecttoWifi)
+* 5. [Enable Passwordless Login](#EnablePasswordlessLogin)
+* 6. [Connect to Wifi](#ConnecttoWifi)
 	* 6.1. [Configure the WPA Supplicant](#ConfiguretheWPASupplicant)
-		* 6.1.1. [Unencrypted Networks](#UnencryptedNetworks)
-		* 6.1.2. [WPA2 Personal Networks](#WPA2PersonalNetworks)
-		* 6.1.3. [WPA2 Enterprise Networks](#WPA2EnterpriseNetworks)
-7. [Update Software Packages](#UpdateSoftwarePackages)
-8. [Graceful Shutdown](#GracefulShutdown)
-9. [Troubleshooting](#Troubleshooting)
+	* 6.2. [Testing and Troubleshooting](#TestingandTroubleshooting)
+* 7. [Update Software Packages](#UpdateSoftwarePackages)
+* 8. [Graceful Shutdown](#GracefulShutdown)
+* 9. [Troubleshooting](#Troubleshooting)
 	* 9.1. [Can't find _raspberrypi.local_ on Windows](#Cantfind_raspberrypi.local_onWindows)
 	* 9.2. [Missing Network Drivers](#MissingNetworkDrivers)
 	* 9.3. [SSH Connection Warning](#SSHConnectionWarning)
@@ -33,9 +33,6 @@
 	autoSave=true
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
-
-##  1. <a name='Overview'></a>Overview
-
 
 ##  2. <a name='Beforeyoustart'></a>Before you start
 ###  2.1. <a name='Everyone'></a>Everyone
@@ -261,9 +258,11 @@ _Note: The second set of parameters in this command specifies the user (`pi`) th
 To complete this guide, you will need to establish Internet connectivity for your Pi. Since the Pi 3 has integrated wireless capabilities, we can solve the problem by connecting to local wifi. 
 
 ###  6.1. <a name='ConfiguretheWPASupplicant'></a>Configure the WPA Supplicant
-Wireless settings for the Pi are controlled by a service called _wpa_supplicant_, which stores network connection settings inside `/etc/wpa_supplicant/wpa_supplicant.conf`. You can edit this directly on the Pi using the nano text editor (or vi for the daring).
+Wireless settings for the Pi are controlled by a service called _wpa_supplicant_, which stores network connection settings inside `/etc/wpa_supplicant/wpa_supplicant.conf`. You can edit this directly on the Pi using the nano text editor (or vi for the daring). Alternatively, you can create the file on your local system and copy it into place on the Pi (as described later in this guide). 
 
-Alternatively, you can create the file on your local system and copy it into place on the Pi (as described later in this guide). 
+For this project, you must configure a connection to the Eduroam network. It's also a good idea at this time to configure connections to your home network.
+
+_Note: **Do not** associate your Pi with *University of Washington* unless given direct instructions to do so. Because the network requires a browser-based login, it has been a major source of trouble for former students._
 
 Begin your `wpa_supplicant.conf` file with the following lines and then add one or more network blocks (including a connection to Eduroam) as shown below.
 
@@ -271,11 +270,13 @@ Begin your `wpa_supplicant.conf` file with the following lines and then add one 
 country=US
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
+
+# INSERT WPA2 ENTERPRISE CONFIG FOR EDUROAM
 ```
 
 _Note: When working with configuration in Linux, it's best to assume that the syntax is case and whitespace sensitive unless otherwise specified. It's common for seemingly non-important changes to render the entire configuration invalid._
 
-When you are finished updating `wpa_supplicant.conf` reconfigure the wireless interface by calling `wpa_cli -i wlan0 reconfigure`. The command should return __OK__ after a few seconds. Check that you are attached to the wireless network  by calling `wpa_cli -i wlan0 status`.
+When you are finished updating `wpa_supplicant.conf` reconfigure the wireless interface by calling `wpa_cli -i wlan0 reconfigure`. The command should return `OK` after a few seconds. Check that you are attached to the wireless network  by calling `wpa_cli -i wlan0 status`.
 
 ```
 pi@titan:~ $ wpa_cli -i wlan0 status
@@ -303,6 +304,9 @@ eap_session_id=19865aef996591ffbd01643fbcf1b5111ef04dd3ed4f3387752c8cc0cf3b8c88b
 uuid=c4adf7c1-f863-5192-8179-f5d1d2e27fd7
 ```
 
+###  6.2. <a name='TestingandTroubleshooting'></a>Testing and Troubleshooting
+In addition to `wpa_cli`, there are several tools that can be used to check the current state of your wireless interface and determine whether it has received a valid configuration from DHCP.
+
 ```bash
 # Show the current state of the wlan0 interface
 pi@titan:~ $ ip link show wlan0
@@ -320,80 +324,6 @@ pi@titan:~ $ ip addr show wlan0
     inet6 fe80::ce14:df50:b3f0:9c2a/64 scope link
        valid_lft forever preferred_lft forever
 ```
-
-
-####  6.1.1. <a name='UnencryptedNetworks'></a>Unencrypted Networks
-Let's start by looking at the configuration for an unencrypted network. A network configuration block is structured as a list of `parameter=value` pairs enclosed within `network={ }`.
-
-For every network type that we create, we will need to specify a value for the `ssid` parameter. The _service set identifier (SSID)_ is the network name that you see on your device when you connect to a wireless network. Since this name may include whitespace, we encode it in double quotes.
-
-In addition to the _ssid_, _wpa_supplicant_ expects us to provide encryption related parameters or to explicitly disable encryption by setting the parameter `key_mgmt` to `NONE`.
-
-Taking the _University of Washington_ wifi as an example, we would append the following configuration block to the configuration template we began above.
-
-```
-network={
-    ssid="University of Washington"
-    key_mgmt=NONE
-}
-```
-
-####  6.1.2. <a name='WPA2PersonalNetworks'></a>WPA2 Personal Networks
-For a basic (non-enterprise) encrypted network, the configuration of the network block changes only slightly. Rather than specify the `key_mgmt` setting, we assign the network passphrase to the `psk` parameter.
-
-There are two ways to accomplish this task. First, we can assign the passphrase directly to the parameter in plaintext as shown here. __This approach is not recommended.__
-
-```
-network={
-    ssid="My Fancy Wifi"
-    psk="super secret squirrels"
-}
-```
-
-Security professionals generally frown on plaintext passwords and passphrases being written to configuration files or code. As such, we prefer to write the configuration based on the raw network key (computed using a function called _PBKDF_ in conjunction with _SHA1_).
-
-You can generate the psk directly on your Pi by running the  `wpa_passphrase` utility. 
-
-```bash
-# Running on your Raspberry Pi
-
-# Pass your SSID as the first argument
-pi@titan:~ $ wpa_passphrase "My Fancy Wifi"
-
-# Enter passphrase at the prompt (you won't see characters echoed back)
-```
-
-####  6.1.3. <a name='WPA2EnterpriseNetworks'></a>WPA2 Enterprise Networks
-Unlike home and coffee shop networks, enterprise networks like _Eduroam_, require a bit more setup since they authenticate individual users to the network as part of the process of establishing an encrypted connection. As such, these networks are substantially more secure than networks that are protected by _WPA2 Personal_. 
-
-To configure your Pi for _Eduroam_ wireless, you can use the template below, substituting your own NetID and a hash computed from your UW password.
-
-```
-network={
-        ssid="eduroam"
-        scan_ssid=1
-        key_mgmt=WPA-EAP
-        eap=PEAP
-        identity="netid@uw.edu"
-        password=hash:6f9bad2c90b80bd549e595fc91e27806
-        phase1="peaplabel=0"
-        phase2="auth=MSCHAPV2"
-}
-```
-
-We can compute the MD4 hash of your password from the command line in Linux as shown below:
-
-```bash
-# IMPORTANT: Run these commands in sequence. This prevents your netID password from being saved in the bash history file.
-pi@titan:~ $ set +o history
-
-pi@titan:~ $  echo -n 'This is your password' | iconv -t utf16le | openssl md4
-# You should see output like 6f9bad2c90b80bd549e595fc91e27806
-
-pi@titan:~ $ set -o history
-```
-
-_Note: MD4 does not provide a ton of protection for weak passwords. If you lose your memory card, I recommend updating your password._
 
 ##  7. <a name='UpdateSoftwarePackages'></a>Update Software Packages
 Let's finalize the initial setup by checking for updates to Raspbian and its default packages (this can take a few minutes on slow networks).
