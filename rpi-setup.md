@@ -62,9 +62,7 @@ WindowsSystemRoot              : C:\WINDOWS
 WindowsVersion                 : 1809
 ```
 
-If the system reports that you are on Windows 10 and that the `WindowsVerion` is `1803` or newer, you may skip to the main tutorial. Otherwise, please proceed to download and install __Bonjour Print Services for Windows (current version 2.0.2)__ from Apple. 
-
-Bonjour includes an implementation of _multicast DNS (mDNS). mDNS is a standard protocol that lets us locate devices and services (including our RaspberryPi's) on simple networks without any manual configuration or supporting infrastructure. Microsoft has only begun to embrace these standards, and this poses a problem since our initial network consists of nothing more than a point-to-point Ethernet connection.
+If the system reports that you are on Windows 10 and that the `WindowsVerion` is `1809` or newer, you are ready to proceed with main tutorial. Otherwise, you will need to upgrade Windows to a supported version.
 
 ###  2.3. <a name='LinuxUsers'></a>Linux Users
 Using your default package manager (likely `yum` or `apt`), confirm that __Avahi mDNS__ services are installed (mDNS is typically part of the default distribution).
